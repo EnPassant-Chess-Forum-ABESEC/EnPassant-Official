@@ -1,45 +1,74 @@
 import mongoose from "mongoose";
 
 // chess accounts sub schema
-const chessAccountsSchema = new mongoose.Schema({
-  _id: false,
-
-  chessCom: {
-    userId: { type: String },
-    ratings: {
-      blitz: { type: Number, default: 0 },
-      bullet: { type: Number, default: 0 },
-      rapid: { type: Number, default: 0 },
+const chessAccountsSchema = new mongoose.Schema(
+  {
+    chessCom: {
+      username: { type: String, trim: true },
+      ratings: {
+        blitz: { type: Number, default: 0 },
+        bullet: { type: Number, default: 0 },
+        rapid: { type: Number, default: 0 },
+      },
     },
-  },
-  lichess: {
-    userId: { type: String },
-    ratings: {
-      blitz: { type: Number, default: 0 },
-      bullet: { type: Number, default: 0 },
-      rapid: { type: Number, default: 0 },
+    lichess: {
+      username: { type: String, trim: true },
+      ratings: {
+        blitz: { type: Number, default: 0 },
+        bullet: { type: Number, default: 0 },
+        rapid: { type: Number, default: 0 },
+      },
     },
+    lastSync: { type: Date, default: Date.now },
   },
-  lastSync: { type: Date, default: Date.now },
-});
+  { _id: false },
+);
 
 // main user schema
-const userSchema = new mongoose.Schema({
-  firebaseUid: { type: String, required: true },
-  userName: { type: String, required: true },
-  collegeEmail: { type: String, required: true },
-  branch: { type: String, default: "null" },
-  year: { type: Number, min: 1, max: 5, default: 1 }, // 5 for passed out peeps if needed(can be removed if not required)
-  chessAccounts: { type: chessAccountsSchema, default: {} },
-  profilePictureUrl: {
-    type: String,
-    default: " ", // default profile url
+const userSchema = new mongoose.Schema(
+  {
+    firebaseUid: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+      trim: true,
+    },
+    userName: { type: String, required: true, trim: true },
+    collegeEmail: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    branch: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    year: { type: Number, min: 1, max: 5, default: 1 }, // 5 for passed out peeps if needed(can be removed if not required)
+    chessAccounts: { type: chessAccountsSchema, default: {} },
+    profilePictureUrl: {
+      type: String,
+      default: " ", // left blank, will be added later
+      trim: true,
+    },
+    isOnboardingComplete: {
+      type: Boolean,
+      default: false,
+    },
+
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
   },
-  isOnboardingCompelte: { type: Boolean, default: false },
-  role: { type: String, required: true, default: "user" },
-  cretedAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
+  {
+    timestamps: true,
+  },
+);
 
 const User = mongoose.model("User", userSchema);
 
