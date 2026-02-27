@@ -37,11 +37,19 @@ const userSchema = new mongoose.Schema(
     userName: { type: String, required: true, trim: true },
     collegeEmail: {
       type: String,
-      required: true,
+      unique: true,
+      sparse: true,
+      lowercase: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      sparse: true,
       unique: true,
       lowercase: true,
       trim: true,
     },
+
     branch: {
       type: String,
       default: null,
@@ -63,6 +71,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    authMethod: {
+      type: String,
+      enum: ["emailPassword", "google", "microsoft"],
     },
   },
   {
