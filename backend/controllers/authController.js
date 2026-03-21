@@ -2,8 +2,6 @@ import firebaseAdmin from "../config/firebaseAdmin.js";
 import User from "../models/User.js";
 import { emailRegex, passwordRegex } from "../utils/regex.js";
 import { generateToken } from "../utils/generateToken.js";
-import { messaging } from "firebase-admin";
-import { decode } from "jsonwebtoken";
 
 export const registerEmailPassword = async (req, res) => {
   const { userName, email, password } = req.body;
@@ -45,7 +43,7 @@ export const registerEmailPassword = async (req, res) => {
     const user = await User.create({
       firebaseUid: firebaseUser.uid,
       userName,
-      email,
+      email: email.toLowerCase(),
       collegeEmail: null,
       authMethod: "emailPassword",
       role: "user",
@@ -94,6 +92,26 @@ export const loginEmailPassword = async (req, res) => {
   } catch (err) {
     console.error("Login error", err);
     return res.status(401).json({ error: "Invalid or expired token" });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+  try {
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    await firebaseAdmin.auth().generatePasswordResetLink(email.toLowerCase());
+    return res
+      .status(200)
+      .json({ message: "Password resert link sent to email" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 

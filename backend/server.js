@@ -3,6 +3,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 5000;
 
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 const startServer = async () => {
   try {

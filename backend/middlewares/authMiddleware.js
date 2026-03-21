@@ -27,3 +27,18 @@ export const protect = async (req, res, next) => {
     return res.status(401).json({ message: "Invalid token" });
   }
 };
+
+export const adminMiddleware = async (req, res, next) => {
+  try {
+    if (!req.user)
+      return res.status(401).message({ message: "user not found" });
+
+    if (req.user.role !== "admin")
+      return res.status(403).json({ message: "Not authorized as admin" });
+
+    next();
+  } catch (err) {
+    console.error("Admin auth error");
+    res.status(500).json({ message: "Admin auth error", err });
+  }
+};
