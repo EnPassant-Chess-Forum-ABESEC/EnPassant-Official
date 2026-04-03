@@ -4,6 +4,7 @@ import {
   loginEmailPassword,
   handleMicrosoftAuth,
   handleGoogleAuth,
+  forgotPassword,
 } from "../controllers/authController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
@@ -13,5 +14,6 @@ router.post("/register-email", registerEmailPassword);
 router.post("/google", handleGoogleAuth);
 router.post("/microsoft", handleMicrosoftAuth);
 router.post("/login-email", loginEmailPassword); // expects a idToken sent by the frontend
+router.post("/forgot-password", forgotPassword);
 
 export default router;
